@@ -10,6 +10,7 @@ To get started with this project, please install the following pre-requisites:
 * Docker
 * Docker Compose
 * Make
+* protoc ([Docs](https://grpc.io/docs/protoc-installation/))
 
 To check whether you meet all pre-requisites, you can run the
 [setup](./scripts/setup) script:
