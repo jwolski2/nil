@@ -11,6 +11,7 @@ To get started with this project, please install the following pre-requisites:
 * Docker Compose
 * Make
 * protoc ([Docs](https://grpc.io/docs/protoc-installation/))
+* Terraform, v1.3.7 ([Docs](https://developer.hashicorp.com/terraform/downloads))
 
 To check whether you meet all pre-requisites, you can run the
 [setup](./scripts/setup) script:
