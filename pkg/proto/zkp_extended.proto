@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-option go_package = "github.com/jwolski2/zkp-extended/proto";
+option go_package = "github.com/jwolski2/zkp-extended/pkg/proto";
 
 message RegisterRequest {
     string user = 1;

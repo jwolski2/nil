@@ -2,7 +2,7 @@
 // versions:
 // - protoc-gen-go-grpc v1.2.0
 // - protoc             v3.12.4
-// source: proto/zkp_extended.proto
+// source: pkg/proto/zkp_extended.proto
 
 package proto
 
@@ -173,5 +173,5 @@ var Auth_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "proto/zkp_extended.proto",
+	Metadata: "pkg/proto/zkp_extended.proto",
 }
