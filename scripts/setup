@@ -69,7 +69,7 @@ Checking for pre-requisite software...
 
 EOF
 
-    check_deps docker docker-compose go make
+    check_deps docker docker-compose go make terraform
     check_protoc_plugins
 
     cat <<EOF >&2
