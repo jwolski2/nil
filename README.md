@@ -21,11 +21,11 @@ To check whether you meet all pre-requisites, you can run the
 
 Now, you can follow the guide that best suits your use case:
 
-* Building the project: [locally](#building-the-go-binary) or from [Docker](#building-the-docker-image)
-* [Running the application](#running-the-application-from-docker)
-* [Provisioning the application on AWS](#provisioning-the-application-on-aws)
+* Building the project: [locally](#beaver-building-the-go-binary) or from [Docker](#whale-building-the-docker-image)
+* [Running the application](#whale-running-the-application-from-docker)
+* [Provisioning the application on AWS](#partly_sunny-provisioning-the-application-on-aws)
 
-## Building the Go Binary
+## :beaver: Building the Go Binary
 
 To build this project, run the `make build` target:
 
@@ -36,7 +36,7 @@ make build
 This target builds 4 binaries, 2 for each of the supported platforms:
 Linux/amd64 and MacOS/arm64. The binaries are written to `bin/`.
 
-## Building the Docker Image
+## :whale: Building the Docker Image
 
 To build Docker images for this project, run the `make build-docker` target.
 
@@ -47,7 +47,7 @@ make build-docker
 This target builds 2 images tagged `zkp-client:latest` and `zkp-server:latest`
 for the client and server applications, respectively.
 
-## Running the Application from Docker
+## :whale: Running the Application from Docker
 
 To run the application, run the `make run-docker` target:
 
@@ -58,7 +58,7 @@ make run-docker
 This target uses `docker-compose` to fire up the client and server application,
 each in their own container.
 
-## Provisioning the Application on AWS
+## :partly_sunny: Provisioning the Application on AWS
 
 To provision the application and supporting infrastructure on AWS, run the `make
 run-terraform` target:
