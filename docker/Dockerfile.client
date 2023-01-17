@@ -14,6 +14,7 @@ WORKDIR /workspace
 COPY go.mod .
 COPY Makefile .
 COPY cmd/client/ cmd/client/
+COPY pkg/client/ pkg/client/
 COPY vendor/ vendor/
 
 # Builder stage: Build.
