@@ -22,6 +22,7 @@ Now, you can follow the guide that best suits your use case:
 
 * Building the project: [locally](#building-the-go-binary) or from [Docker](#building-the-docker-image)
 * [Running the application](#running-the-application-from-docker)
+* [Provisioning the application on AWS](#provisioning-the-application-on-aws)
 
 ## Building the Go Binary
 
@@ -55,3 +56,20 @@ make run-docker
 
 This target uses `docker-compose` to fire up the client and server application,
 each in their own container.
+
+## Provisioning the Application on AWS
+
+To provision the application and supporting infrastructure on AWS, run the `make
+run-terraform` target:
+
+```
+make run-terraform
+```
+
+This target uses Terraform to launch 2 EC2 instances in the same VPC/subnet. The
+instance userdata is configured to install the full zkp-extended toolchain
+including Golang and Docker. After building the client and server images, on
+their respective instances, the Terraform ensures the client `login` command
+exits `0`.
+
+:bulb: _The Terraform stores its state locally. All caveats apply._

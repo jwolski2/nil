@@ -19,9 +19,15 @@ build-proto:
 
 .PHONY: build-docker
 build-docker:
-	@docker build -t zkp-client -f docker/Dockerfile.client .
-	@docker build -t zkp-server -f docker/Dockerfile.server .
+	@docker build -t zkp-client -f infra/docker/Dockerfile.client .
+	@docker build -t zkp-server -f infra/docker/Dockerfile.server .
 
 .PHONY: run-docker
 run-docker: build-docker
-	sudo docker-compose -f docker/docker-compose.yaml up
+	sudo docker-compose -f infra/docker/docker-compose.yaml up
+
+.PHONY: run-terraform
+run-terraform:
+	terraform -chdir=infra/terraform init
+	terraform -chdir=infra/terraform plan -out=plan.json
+	terraform -chdir=infra/terraform apply ./plan.json
