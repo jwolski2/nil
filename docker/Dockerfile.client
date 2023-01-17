@@ -1,0 +1,28 @@
+# Define builder stage.
+ARG ALPINE_VERSION=3.17
+ARG GO_VERSION=1.19
+FROM golang:${GO_VERSION}-alpine${ALPINE_VERSION} as builder
+
+# Builder stage: Install requisite packages.
+RUN apk update && apk add make
+
+# Builder stage: Set workspace for building the client/server application.
+RUN mkdir -p /workspace
+WORKDIR /workspace
+
+# Builder stage: Copy files to build.
+COPY go.mod .
+COPY Makefile .
+COPY cmd/client/ cmd/client/
+COPY vendor/ vendor/
+
+# Builder stage: Build.
+RUN make build-linux-client
+
+# Define release stage.
+ARG ALPINE_VERSION
+
+FROM alpine:${ALPINE_VERSION}
+COPY --from=builder /workspace/bin/zkp-client /usr/local/bin
+
+ENTRYPOINT ["zkp-client", "login"]

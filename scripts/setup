@@ -37,7 +37,7 @@ main() {
         esac
     done
 
-    if check_deps go; then
+    if check_deps docker docker-compose go; then
         echo "Good to go! Check the README.md for further build/run instructions." >&2
         exit
     fi
