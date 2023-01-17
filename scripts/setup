@@ -6,7 +6,29 @@ set -o pipefail
 
 check_deps() {
     for c in "${@}"; do
-        command -v "$c" >/dev/null || { echo "$c command not found. Install it, then try again." ; exit 1; }
+        if command -v "$c" >/dev/null; then
+            echo "✔️ Found $c" >&2
+        else
+            echo "❌ $c command not found. Install it, then try again." >&2
+        fi
+    done
+}
+
+check_protoc_plugins() {
+    local gopath=${GOPATH:-}
+
+    if [ -z "$gopath" ]; then
+        echo "❌ \$GOPATH must be set in order to locate protoc plugins." >&2
+        exit 1
+    fi
+
+    for f in protoc-gen-go protoc-gen-go-grpc; do
+        if [ -e "$GOPATH/bin/$f" ]; then
+            echo "✔️ Found protoc plugin: $f" >&2
+        else
+            echo "❌protoc plugin $f not found. See the docs linked in the Getting Started section of README.md" >&2
+            exit 1
+        fi
     done
 }
 
@@ -24,6 +46,7 @@ EOF
 }
 
 main() {
+    # Parse args.
     while [ "$#" -gt 0 ]; do
         case "$1" in
             -h|--help)
@@ -37,10 +60,22 @@ main() {
         esac
     done
 
-    if check_deps docker docker-compose go; then
-        echo "Good to go! Check the README.md for further build/run instructions." >&2
-        exit
-    fi
+    # Welcome all users.
+    cat <<EOF >&2
+
+👋 Welcome, zkp-extended users!
+
+Checking for pre-requisite software...
+
+EOF
+
+    check_deps docker docker-compose go
+    check_protoc_plugins
+
+    cat <<EOF >&2
+
+🚀 All is good. Refer to README.md for further instruction!
+EOF
 }
 
 main "$@"
