@@ -1,0 +1,46 @@
+#!/usr/bin/env bash
+
+set -o errexit
+set -o nounset
+set -o pipefail
+
+check_deps() {
+    for c in "${@}"; do
+        command -v "$c" >/dev/null || { echo "$c command not found. Install it, then try again." ; exit 1; }
+    done
+}
+
+usage() {
+    cat <<EOF >&2
+Usage: $(basename "$0") [options]
+
+This program ensures your environment is setup to run zkp-extended.
+
+OPTIONS:
+
+    -h|--help,          Show usage.
+
+EOF
+}
+
+main() {
+    while [ "$#" -gt 0 ]; do
+        case "$1" in
+            -h|--help)
+                usage
+                exit
+                ;;
+            *)
+                usage
+                exit 1
+                ;;
+        esac
+    done
+
+    if check_deps go; then
+        echo "Good to go! Check the README.md for further build/run instructions." >&2
+        exit
+    fi
+}
+
+main "$@"
