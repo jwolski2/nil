@@ -2,6 +2,13 @@
 
 An implementation of an extended ZKP Protocol which adds 1-factor authentication
 
+:notebook: A note for reviewers: lorem ipsum
+
+*Resources*
+
+* https://crypto.stackexchange.com/questions/99262/chaum-pedersen-protocol
+* https://www.cs.umd.edu/~waa/414-F11/IntroToCrypto.pdf
+
 ## :hatching_chick: Getting Started
 
 To get started with this project, please install the following pre-requisites:
