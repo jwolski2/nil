@@ -27,4 +27,4 @@ ARG ALPINE_VERSION
 FROM alpine:${ALPINE_VERSION}
 COPY --from=builder /workspace/bin/nil-server /usr/local/bin
 
-ENTRYPOINT ["nil-server"]
+ENTRYPOINT ["nil-server", "start"]

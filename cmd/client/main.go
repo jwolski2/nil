@@ -10,6 +10,11 @@ import (
 	"github.com/urfave/cli/v2"
 )
 
+const (
+	serverHostname = "nil-server"
+	serverPort     = 9999
+)
+
 func register(ctx *cli.Context) error {
 	args := ctx.Args()
 
@@ -35,10 +40,12 @@ func register(ctx *cli.Context) error {
 	}
 
 	// Register user.
-	err := client.Register(user, secretBigInt)
+	err := client.Register(serverHostname, serverPort, user, secretBigInt)
 	if err != nil {
 		return fmt.Errorf("Failed to register user: %w", err)
 	}
+
+	fmt.Println("Successfully registered with auth server!")
 
 	return nil
 }

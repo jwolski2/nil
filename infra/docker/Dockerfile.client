@@ -16,6 +16,7 @@ COPY Makefile .
 COPY cmd/client/ cmd/client/
 COPY pkg/client/ pkg/client/
 COPY pkg/crypto/ pkg/crypto/
+COPY pkg/proto/ pkg/proto/
 COPY vendor/ vendor/
 
 # Builder stage: Build.
@@ -27,4 +28,4 @@ ARG ALPINE_VERSION
 FROM alpine:${ALPINE_VERSION}
 COPY --from=builder /workspace/bin/nil-client /usr/local/bin
 
-ENTRYPOINT ["nil-client", "login"]
+ENTRYPOINT ["nil-client"]

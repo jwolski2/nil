@@ -2,23 +2,40 @@ package main
 
 import (
 	"fmt"
-	"log"
-	"net"
+	"os"
 
-	"github.com/jwolski2/nil-extended/pkg/proto"
 	"github.com/jwolski2/nil-extended/pkg/server"
-	"google.golang.org/grpc"
+	"github.com/urfave/cli/v2"
 )
 
-func main() {
-	listener, err := net.Listen("tcp", fmt.Sprintf("localhost:%d", 9999))
+const (
+	port = 9999
+)
+
+func start(ctx *cli.Context) error {
+	err := server.Start(port)
 	if err != nil {
-		log.Fatalf("failed to listen: %v", err)
+		return fmt.Errorf("Failed to start server: %w", err)
 	}
 
-	var opts []grpc.ServerOption
-	grpcServer := grpc.NewServer(opts...)
+	return nil
+}
 
-	proto.RegisterAuthServer(grpcServer, &server.AuthServer{})
-	grpcServer.Serve(listener)
+func main() {
+	app := &cli.App{
+		Name:  "nil-server",
+		Usage: "A Nil server",
+		Commands: []*cli.Command{
+			{
+				Name:   "start",
+				Usage:  "Start the server",
+				Action: start,
+			},
+		},
+	}
+
+	if err := app.Run(os.Args); err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
+	}
 }

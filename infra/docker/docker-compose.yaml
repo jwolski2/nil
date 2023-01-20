@@ -4,10 +4,22 @@ networks:
     driver: bridge
 services:
   nil-server:
+    healthcheck:
+      interval: 10s
+      retries: 3
+      test: ["CMD-SHELL", "nc -w 1 localhost 9999"]
+      timeout: 5s
+    hostname: nil-server
     image: nil-server:latest
     networks:
       - nil-extended
+    ports:
+      - "9999:9999"
   nil-client:
+    command: register wolski 123
+    depends_on:
+      nil-server:
+        condition: service_healthy
     image: nil-client:latest
     networks:
       - nil-extended

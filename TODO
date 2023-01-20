@@ -1,0 +1,8 @@
+- Implement protocol
+- End-to-end test (using shell script, Docker setup)
+- Functional test (using fake client and real server)
+- Unit tests
+- Terraform/AWS
+- Explanation of thought process
+- Review of requirements
+- gRPC certs
