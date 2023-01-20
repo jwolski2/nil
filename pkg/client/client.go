@@ -12,7 +12,7 @@ import (
 )
 
 func Login(serverHostname string, serverPort int, user string, secret *big.Int) (string, error) {
-	r1, r2, err := crypto.GenerateR1AndR2()
+	r1, r2, k, err := crypto.GenerateR1AndR2()
 	if err != nil {
 		return "", fmt.Errorf("Failed to generate r1 and r2: %w", err)
 	}
@@ -49,7 +49,11 @@ func Login(serverHostname string, serverPort int, user string, secret *big.Int) 
 	}
 
 	// Generate s for verification.
-	s, err := crypto.GenerateS(big.NewInt(challengeResp.C))
+	s, err := crypto.GenerateS(
+		secret,                      // x
+		k,                           // from r1/r2 calc,
+		big.NewInt(challengeResp.C), // challenge computed by server
+	)
 	if err != nil {
 		return "", fmt.Errorf("Failed to generate s: %w", err)
 	}

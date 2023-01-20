@@ -11,8 +11,8 @@ import (
 )
 
 const (
-	serverHostname = "nil-server"
-	serverPort     = 9999
+	defaultServerHostname = "nil-server"
+	serverPort            = 9999
 )
 
 func login(ctx *cli.Context) error {
@@ -39,10 +39,15 @@ func login(ctx *cli.Context) error {
 		return errors.New("error: secret cannot be converted to bigint")
 	}
 
+	serverHostname := ctx.String("server-hostname")
+	if serverHostname == "" {
+		serverHostname = defaultServerHostname
+	}
+
 	// Login user.
 	sessionID, err := client.Login(serverHostname, serverPort, user, secretBigInt)
 	if err != nil {
-		return fmt.Errorf("Failed to register user: %w", err)
+		return fmt.Errorf("Failed to login: %w", err)
 	}
 
 	fmt.Println(fmt.Sprintf("Successfully logged in to auth server. Session ID is %s.", sessionID))
@@ -74,6 +79,11 @@ func register(ctx *cli.Context) error {
 		return errors.New("error: secret cannot be converted to bigint")
 	}
 
+	serverHostname := ctx.String("server-hostname")
+	if serverHostname == "" {
+		serverHostname = defaultServerHostname
+	}
+
 	// Register user.
 	err := client.Register(serverHostname, serverPort, user, secretBigInt)
 	if err != nil {
@@ -101,6 +111,13 @@ func main() {
 				ArgsUsage: "user secret",
 				Usage:     "Register with the Nil server",
 				Action:    register,
+			},
+		},
+		Flags: []cli.Flag{
+			&cli.StringFlag{
+				Name:  "server-hostname",
+				Value: "nil-server",
+				Usage: "Hostname for nil-server",
 			},
 		},
 	}
