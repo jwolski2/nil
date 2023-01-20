@@ -11,19 +11,24 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 )
 
+func Login(serverHostname string, serverPort int, user string, secret *big.Int) error {
+	return nil
+}
+
 func Register(serverHostname string, serverPort int, user string, secret *big.Int) error {
 	y1, y2, err := crypto.GenerateY1AndY2(secret)
 	if err != nil {
 		return fmt.Errorf("Failed to generate y1 and y2: %w", err)
 	}
 
-	// Instantiate client w/ insecure TLS to server.
+	// Instantiate client.
 	conn, err := grpc.Dial(
 		// Server address.
 		fmt.Sprintf("%s:%d", serverHostname, serverPort),
 
 		// Client options.
 		[]grpc.DialOption{
+			// Insecure TLS. Sorry, it was a time-saver :|
 			grpc.WithTransportCredentials(insecure.NewCredentials()),
 		}...,
 	)
@@ -37,7 +42,7 @@ func Register(serverHostname string, serverPort int, user string, secret *big.In
 	// Instantiate client.
 	authClient := proto.NewAuthClient(conn)
 
-	// Send commitment.
+	// Send registration request.
 	_, err = authClient.Register(context.Background(), &proto.RegisterRequest{
 		User: user,
 		Y1:   y1.Int64(),

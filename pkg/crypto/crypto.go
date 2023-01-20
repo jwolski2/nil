@@ -2,23 +2,17 @@ package crypto
 
 import (
 	"crypto/rand"
-	"crypto/sha256"
 	"fmt"
 	"math/big"
 )
 
+var (
+	// For now, hard-coded. Later, could be injected at run-time.
+	g, _ = new(big.Int).SetString("27389535407172064518385090712503604205081709236897638041171802294068595118554", 10)
+	h, _ = new(big.Int).SetString("82790680804658874823236941014605029406785332510930358145770704050898063577918", 10)
+)
+
 func GenerateY1AndY2(x *big.Int) (*big.Int, *big.Int, error) {
-	randBytes := make([]byte, 32)
-	rand.Read(randBytes)
-
-	// Generate g.
-	gChecksum := sha256.Sum256(randBytes)
-	g := new(big.Int).SetBytes(gChecksum[:])
-
-	// Generate h.
-	hChecksum := sha256.Sum256(gChecksum[:])
-	h := new(big.Int).SetBytes(hChecksum[:])
-
 	// Generate p.
 	p, err := rand.Prime(rand.Reader, 16)
 	if err != nil {

@@ -20,7 +20,7 @@ COPY pkg/proto/ pkg/proto/
 COPY vendor/ vendor/
 
 # Builder stage: Build.
-RUN make build-linux-client
+RUN make build-client
 
 # Define release stage.
 ARG ALPINE_VERSION

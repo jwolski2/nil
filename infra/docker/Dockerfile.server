@@ -19,7 +19,7 @@ COPY pkg/server pkg/server/
 COPY vendor/ vendor/
 
 # Builder stage: Build.
-RUN make build-linux-server
+RUN make build-server
 
 # Define release stage.
 ARG ALPINE_VERSION
