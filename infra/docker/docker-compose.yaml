@@ -4,6 +4,7 @@ networks:
     driver: bridge
 services:
   nil-server:
+    # Healthcheck ensure server is reachable.
     healthcheck:
       interval: 10s
       retries: 3
@@ -16,8 +17,9 @@ services:
     ports:
       - "9999:9999"
   nil-client:
-    command: register wolski 123
+    command: register ${REGISTER_USERNAME:-wolski} ${REGISTER_SECRET:-123}
     depends_on:
+      # Wait until nil-server is healthy.
       nil-server:
         condition: service_healthy
     image: nil-client:latest

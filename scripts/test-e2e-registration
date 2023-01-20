@@ -1,0 +1,112 @@
+#!/usr/bin/env bash
+
+set -o errexit
+set -o nounset
+set -o pipefail
+
+cwd=$(dirname "$0")
+
+die() {
+    local message="${1:?message is required by die}"
+
+    echo "error: $msg" >&2
+    exit 1
+}
+
+docker_compose_up() {
+	sudo -E docker-compose -f $cwd/../infra/docker/docker-compose.yaml up -d >/dev/null 2>&1
+}
+
+docker_compose_down() {
+	sudo docker-compose -f $cwd/../infra/docker/docker-compose.yaml down >/dev/null 2>&1
+}
+
+test_registration_succeeds() {
+    # Setup.
+    docker_compose_up || die "docker-compose up failed"
+
+    # Wait for client container to exit.
+    local exit_code
+    exit_code=$(docker wait docker_nil-client_1)
+
+    # Cleanup.
+    docker_compose_down || die "docker-compose down failed"
+
+    return $exit_code
+}
+
+test_registration_fails() {
+    # Setup.
+    REGISTER_SECRET=abc docker_compose_up || die "docker-compose up failed"
+
+    # Wait for client container to exit.
+    local exit_code
+    exit_code=$(docker wait docker_nil-client_1)
+
+    # Cleanup.
+    docker_compose_down || die "docker-compose down failed"
+
+    test $exit_code -eq 1
+}
+
+usage() {
+    cat <<EOF >&2
+Usage: $(basename "$0") [options]
+
+This program runs end-to-end tests of the Nil client/server.
+
+It runs docker-compose and checks the exit codes of the client
+container in order to determine correctness.
+
+OPTIONS
+
+    -h|--help,      Show usage.
+
+EOF
+}
+
+main() {
+    while [ "$#" -ne 0 ]; do
+        case "$1" in
+            -h|--help)
+                usage
+                exit
+                ;;
+        esac
+    done
+
+    # Warn users about duration of tests.
+    cat <<EOF >&2
+
+Please wait. This may take several seconds...
+
+EOF
+
+    # Bookkeeping.
+    local num_tests=0
+    local num_passed=0
+
+    # Run tests.
+    for t in test_registration_succeeds test_registration_fails; do
+        if eval $t; then
+            echo "✅ $t passed"
+            num_passed=$(( num_passed + 1 ))
+        else
+            echo "❌ $t failed"
+        fi
+
+        num_tests=$(( num_tests + 1 ))
+    done
+
+    cat <<EOF >&2
+
+$num_passed passed, $(( num_tests - num_passed )) failed, $num_tests total.
+EOF
+
+    # Exit non-zero if there was a failure.
+    if [ $num_passed -ne $num_tests ]; then
+        exit 1
+    fi
+}
+
+main "$@"
