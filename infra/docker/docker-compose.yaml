@@ -4,6 +4,9 @@ networks:
     driver: bridge
 services:
   nil-server:
+    build:
+      context: ../..
+      dockerfile: ./infra/docker/Dockerfile.server
     # Healthcheck ensure server is reachable.
     healthcheck:
       interval: 10s
@@ -11,15 +14,17 @@ services:
       test: ["CMD-SHELL", "nc -w 1 localhost 9999"]
       timeout: 5s
     hostname: nil-server
-    image: nil-server:latest
     networks:
       - nil-extended
     ports:
       - "9999:9999"
   nil-client:
+    build:
+      context: ../..
+      dockerfile: ./infra/docker/Dockerfile.client
     command: register ${REGISTER_USERNAME:-wolski} ${REGISTER_SECRET:-123}
     depends_on:
-      # Wait until nil-server is healthy.
+      # Wait until nil-server is healthy before running registration.
       nil-server:
         condition: service_healthy
     image: nil-client:latest

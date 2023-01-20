@@ -14,7 +14,7 @@ die() {
 }
 
 docker_compose_up() {
-    sudo -E docker-compose -f $cwd/../infra/docker/docker-compose.yaml up -d >/dev/null 2>&1
+    sudo -E docker-compose -f $cwd/../infra/docker/docker-compose.yaml up --build -d >/dev/null 2>&1
 }
 
 docker_compose_down() {
