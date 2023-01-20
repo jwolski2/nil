@@ -21,12 +21,16 @@ func GenerateR1AndR2() (*big.Int, *big.Int, error) {
 	}
 
 	// Generate r1: g^k mod p
-	r1 := new(big.Int).Mod(new(big.Int).Exp(g, k, nil), k)
+	r1 := new(big.Int).Mod(new(big.Int).Exp(g, k, nil), p)
 
 	// Generate r2: h^k mod p
-	r2 := new(big.Int).Mod(new(big.Int).Exp(h, k, nil), k)
+	r2 := new(big.Int).Mod(new(big.Int).Exp(h, k, nil), p)
 
 	return r1, r2, nil
+}
+
+func GenerateS(c *big.Int) (*big.Int, error) {
+	return new(big.Int), nil
 }
 
 func GenerateY1AndY2(x *big.Int) (*big.Int, *big.Int, error) {

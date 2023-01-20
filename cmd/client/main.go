@@ -39,13 +39,13 @@ func login(ctx *cli.Context) error {
 		return errors.New("error: secret cannot be converted to bigint")
 	}
 
-	// Register user.
-	err := client.Login(serverHostname, serverPort, user, secretBigInt)
+	// Login user.
+	sessionID, err := client.Login(serverHostname, serverPort, user, secretBigInt)
 	if err != nil {
 		return fmt.Errorf("Failed to register user: %w", err)
 	}
 
-	fmt.Println("Successfully registered with auth server!")
+	fmt.Println(fmt.Sprintf("Successfully logged in to auth server. Session ID is %s.", sessionID))
 
 	return nil
 }

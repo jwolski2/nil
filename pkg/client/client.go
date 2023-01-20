@@ -11,8 +11,59 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 )
 
-func Login(serverHostname string, serverPort int, user string, secret *big.Int) error {
-	return nil
+func Login(serverHostname string, serverPort int, user string, secret *big.Int) (string, error) {
+	r1, r2, err := crypto.GenerateR1AndR2()
+	if err != nil {
+		return "", fmt.Errorf("Failed to generate r1 and r2: %w", err)
+	}
+
+	// Instantiate client.
+	conn, err := grpc.Dial(
+		// Server address.
+		fmt.Sprintf("%s:%d", serverHostname, serverPort),
+
+		// Client options.
+		[]grpc.DialOption{
+			// Insecure TLS. Sorry, it was a time-saver :|
+			grpc.WithTransportCredentials(insecure.NewCredentials()),
+		}...,
+	)
+	if err != nil {
+		return "", fmt.Errorf("Failed to dial gRPC server: %w", err)
+	}
+
+	// Remember to close open connection.
+	defer conn.Close()
+
+	// Instantiate client.
+	authClient := proto.NewAuthClient(conn)
+
+	// Send commitment.
+	challengeResp, err := authClient.CreateAuthenticationChallenge(context.Background(), &proto.AuthenticationChallengeRequest{
+		User: user,
+		R1:   r1.Int64(),
+		R2:   r2.Int64(),
+	}, []grpc.CallOption{}...)
+	if err != nil {
+		return "", fmt.Errorf("Failed to create authentication challenge: %w", err)
+	}
+
+	// Generate s for verification.
+	s, err := crypto.GenerateS(big.NewInt(challengeResp.C))
+	if err != nil {
+		return "", fmt.Errorf("Failed to generate s: %w", err)
+	}
+
+	// Send challenge answer.
+	answerResp, err := authClient.VerifyAuthentication(context.Background(), &proto.AuthenticationAnswerRequest{
+		AuthId: challengeResp.AuthId,
+		S:      s.Int64(),
+	}, []grpc.CallOption{}...)
+	if err != nil {
+		return "", fmt.Errorf("Failed to verify authentication: %w", err)
+	}
+
+	return answerResp.SessionId, nil
 }
 
 func Register(serverHostname string, serverPort int, user string, secret *big.Int) error {
