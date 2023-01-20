@@ -5,8 +5,8 @@ import (
 	"log"
 	"net"
 
-	"github.com/jwolski2/zkp-extended/pkg/proto"
-	"github.com/jwolski2/zkp-extended/pkg/server"
+	"github.com/jwolski2/nil-extended/pkg/proto"
+	"github.com/jwolski2/nil-extended/pkg/server"
 	"google.golang.org/grpc"
 )
 

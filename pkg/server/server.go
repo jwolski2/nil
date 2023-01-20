@@ -3,7 +3,7 @@ package server
 import (
 	"context"
 
-	"github.com/jwolski2/zkp-extended/pkg/proto"
+	"github.com/jwolski2/nil-extended/pkg/proto"
 )
 
 type AuthServer struct {

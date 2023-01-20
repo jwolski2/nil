@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"math/big"
 
-	"github.com/jwolski2/zkp-extended/pkg/crypto"
+	"github.com/jwolski2/nil-extended/pkg/crypto"
 )
 
 func Register(user string, secret *big.Int) error {

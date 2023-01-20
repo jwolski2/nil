@@ -36,7 +36,7 @@ usage() {
     cat <<EOF >&2
 Usage: $(basename "$0") [options]
 
-This program ensures your environment is setup to run zkp-extended.
+This program ensures your environment is setup to run nil-extended.
 
 OPTIONS:
 
@@ -63,7 +63,7 @@ main() {
     # Welcome all users.
     cat <<EOF >&2
 
-👋 Welcome, zkp-extended users!
+👋 Welcome, nil users!
 
 Checking for pre-requisite software...
 

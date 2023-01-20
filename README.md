@@ -1,4 +1,4 @@
-# :zero: zkp-extended
+# :zero: nil-extended
 
 An implementation of an extended ZKP Protocol which adds 1-factor authentication
 
@@ -52,7 +52,7 @@ To build Docker images for this project, run the `make build-docker` target.
 make build-docker
 ```
 
-This target builds 2 images tagged `zkp-client:latest` and `zkp-server:latest`
+This target builds 2 images tagged `nil-client:latest` and `nil-server:latest`
 for the client and server applications, respectively.
 
 ## :whale: Running the Application from Docker
@@ -76,7 +76,7 @@ make run-terraform
 ```
 
 This target uses Terraform to launch 2 EC2 instances in the same VPC/subnet. The
-instance userdata is configured to install the full zkp-extended toolchain
+instance userdata is configured to install the full nil-extended toolchain
 including Golang and Docker. After building the client and server images, on
 their respective instances, the Terraform ensures the client `login` command
 exits `0`.

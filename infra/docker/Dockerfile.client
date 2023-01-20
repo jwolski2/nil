@@ -25,6 +25,6 @@ RUN make build-linux-client
 ARG ALPINE_VERSION
 
 FROM alpine:${ALPINE_VERSION}
-COPY --from=builder /workspace/bin/zkp-client /usr/local/bin
+COPY --from=builder /workspace/bin/nil-client /usr/local/bin
 
-ENTRYPOINT ["zkp-client", "login"]
+ENTRYPOINT ["nil-client", "login"]

@@ -1,13 +1,13 @@
 version: "3.1"
 networks:
-  zkp-extended:
+  nil-extended:
     driver: bridge
 services:
-  zkp-server:
-    image: zkp-server:latest
+  nil-server:
+    image: nil-server:latest
     networks:
-      - zkp-extended
-  zkp-client:
-    image: zkp-client:latest
+      - nil-extended
+  nil-client:
+    image: nil-client:latest
     networks:
-      - zkp-extended
+      - nil-extended

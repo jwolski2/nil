@@ -6,7 +6,7 @@ import (
 	"math/big"
 	"os"
 
-	"github.com/jwolski2/zkp-extended/pkg/client"
+	"github.com/jwolski2/nil-extended/pkg/client"
 	"github.com/urfave/cli/v2"
 )
 
@@ -45,13 +45,13 @@ func register(ctx *cli.Context) error {
 
 func main() {
 	app := &cli.App{
-		Name:  "zkp-client",
-		Usage: "A CLI for the ZKP server",
+		Name:  "nil-client",
+		Usage: "A CLI for the Nil server",
 		Commands: []*cli.Command{
 			{
 				Name:      "register",
 				ArgsUsage: "user secret",
-				Usage:     "Register with the ZKP server",
+				Usage:     "Register with the Nil server",
 				Action:    register,
 			},
 		},

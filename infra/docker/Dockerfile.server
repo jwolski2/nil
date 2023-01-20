@@ -25,6 +25,6 @@ RUN make build-linux-server
 ARG ALPINE_VERSION
 
 FROM alpine:${ALPINE_VERSION}
-COPY --from=builder /workspace/bin/zkp-server /usr/local/bin
+COPY --from=builder /workspace/bin/nil-server /usr/local/bin
 
-ENTRYPOINT ["zkp-server"]
+ENTRYPOINT ["nil-server"]

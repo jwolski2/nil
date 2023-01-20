@@ -1,4 +1,4 @@
-module github.com/jwolski2/zkp-extended
+module github.com/jwolski2/nil-extended
 
 go 1.19
 
