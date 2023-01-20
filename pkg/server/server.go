@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"math/big"
 	"net"
 
 	"github.com/jwolski2/nil-extended/pkg/crypto"
@@ -51,7 +52,7 @@ func (s *AuthServer) CreateAuthenticationChallenge(ctx context.Context, req *pro
 		return nil, fmt.Errorf("Failed to generate c: %w", err)
 	}
 
-	authID, err := crypto.Random256Bit()
+	authID, err := crypto.RandomInt(256)
 	if err != nil {
 		return nil, fmt.Errorf("Failed to generate auth ID: %w", err)
 	}
@@ -66,6 +67,7 @@ func (s *AuthServer) CreateAuthenticationChallenge(ctx context.Context, req *pro
 		r2:     req.R2,
 		user:   req.User,
 	}
+	fmt.Printf("challenge is: %+v\n", ch)
 	err = s.storage.storeChallenge(ch)
 	if err != nil {
 		return nil, fmt.Errorf("Failed to record challenge: %w", err)
@@ -88,9 +90,30 @@ func (s *AuthServer) Register(ctx context.Context, req *proto.RegisterRequest) (
 }
 
 func (s *AuthServer) VerifyAuthentication(ctx context.Context, req *proto.AuthenticationAnswerRequest) (*proto.AuthenticationAnswerResponse, error) {
-	// TODO: Verify.
+	ch, ok := s.storage.activeChallenges[authID(req.AuthId)]
+	if !ok {
+		return nil, errors.New("Active challenge not found")
+	}
 
-	sessionID, err := crypto.Random256Bit()
+	ys, ok := s.storage.users[userID(ch.user)]
+	if !ok {
+		return nil, errors.New("Registered user not found for active challenge")
+	}
+
+	isVerified := crypto.VerifyR1AndR2(
+		big.NewInt(ch.r1),
+		big.NewInt(ch.r2),
+		big.NewInt(req.S),
+		ch.c,
+		big.NewInt(ys.y1),
+		big.NewInt(ys.y2),
+	)
+
+	if !isVerified {
+		return nil, errors.New("R1 and R2 could not be verified")
+	}
+
+	sessionID, err := crypto.RandomInt(256)
 	if err != nil {
 		return nil, fmt.Errorf("Failed to generate sessionID: %w", err)
 	}
