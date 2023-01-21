@@ -8,9 +8,9 @@ import (
 
 var (
 	// For now, hard-coded. Later, could be injected at run-time.
-	p = big.NewInt(23)
-	g = big.NewInt(4)
-	h = big.NewInt(9)
+	p = big.NewInt(55903)
+	g = big.NewInt(35)
+	h = big.NewInt(1225)
 	q = big.NewInt(11)
 )
 
