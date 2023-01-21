@@ -11,8 +11,7 @@ import (
 )
 
 const (
-	defaultParamsFile = "data/params1.json"
-	defaultPort       = 9999
+	defaultPort = 9999
 )
 
 func start(ctx *cli.Context) error {
@@ -47,7 +46,7 @@ func main() {
 				Flags: []cli.Flag{
 					&cli.StringFlag{
 						Name:  "params-file",
-						Value: defaultParamsFile,
+						Value: crypto.DefaultParamsFile,
 						Usage: "Public params to use between client/server",
 					},
 					&cli.UintFlag{

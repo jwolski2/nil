@@ -114,7 +114,7 @@ func (s *AuthServer) VerifyAuthentication(ctx context.Context, req *proto.Authen
 	)
 
 	if !isVerified {
-		return nil, errors.New("R1 and R2 could not be verified")
+		return nil, errors.New("r1 and r2 could not be verified")
 	}
 
 	sessionID, err := crypto.RandomInt(128)

@@ -12,46 +12,31 @@ import (
 )
 
 const (
-	defaultServerHostname = "nil-server"
-	serverPort            = 9999
+	defaultHostname = "nil-server"
+	defaultPort     = 9999
 )
 
 func login(ctx *cli.Context) error {
-	args := ctx.Args()
-
-	// Validate inputs.
-	if args.Len() != 2 {
-		return errors.New("error: missing arguments. See --help.")
+	// Get positional args.
+	user, secret, err := validatePositionalArgs(ctx)
+	if err != nil {
+		return fmt.Errorf("error: could not validate positional args: %w", err)
 	}
 
-	user := args.Get(0)
-	if len(user) == 0 {
-		return errors.New("error: user cannot be empty")
-	}
-
-	secret := args.Get(1)
-	if len(secret) == 0 {
-		return errors.New("error: secret cannot be empty")
-	}
-
-	secretBigInt := new(big.Int)
-	secretBigInt, ok := secretBigInt.SetString(secret, 10)
-	if !ok {
-		return errors.New("error: secret cannot be converted to bigint")
-	}
-
-	serverHostname := ctx.String("server-hostname")
-	if serverHostname == "" {
-		serverHostname = defaultServerHostname
-	}
-
-	params, err := crypto.Load("data/params1.json")
+	// Validate options.
+	params, err := crypto.Load(ctx.String("params-file"))
 	if err != nil {
 		return fmt.Errorf("Failed to load params from disk: %w", err)
 	}
 
 	// Login user.
-	sessionID, err := client.Login(serverHostname, serverPort, params, user, secretBigInt)
+	sessionID, err := client.Login(
+		ctx.String("hostname"),
+		ctx.Uint("port"),
+		params,
+		user,
+		secret,
+	)
 	if err != nil {
 		return errors.New("Login unsuccessful.")
 	}
@@ -62,41 +47,26 @@ func login(ctx *cli.Context) error {
 }
 
 func register(ctx *cli.Context) error {
-	args := ctx.Args()
-
-	// Validate inputs.
-	if args.Len() != 2 {
-		return errors.New("error: missing arguments. See --help.")
+	// Get positional args.
+	user, secret, err := validatePositionalArgs(ctx)
+	if err != nil {
+		return fmt.Errorf("error: could not validate positional args: %w", err)
 	}
 
-	user := args.Get(0)
-	if len(user) == 0 {
-		return errors.New("error: user cannot be empty")
-	}
-
-	secret := args.Get(1)
-	if len(secret) == 0 {
-		return errors.New("error: secret cannot be empty")
-	}
-
-	secretBigInt := new(big.Int)
-	secretBigInt, ok := secretBigInt.SetString(secret, 10)
-	if !ok {
-		return errors.New("error: secret cannot be converted to bigint")
-	}
-
-	serverHostname := ctx.String("server-hostname")
-	if serverHostname == "" {
-		serverHostname = defaultServerHostname
-	}
-
-	params, err := crypto.Load("data/params1.json")
+	// Validate options.
+	params, err := crypto.Load(ctx.String("params-file"))
 	if err != nil {
 		return fmt.Errorf("Failed to load params from disk: %w", err)
 	}
 
 	// Register user.
-	err = client.Register(serverHostname, serverPort, params, user, secretBigInt)
+	err = client.Register(
+		ctx.String("hostname"),
+		ctx.Uint("port"),
+		params,
+		user,
+		secret,
+	)
 	if err != nil {
 		return fmt.Errorf("Failed to register user: %w", err)
 	}
@@ -104,6 +74,32 @@ func register(ctx *cli.Context) error {
 	fmt.Println("User has been registered!")
 
 	return nil
+}
+
+func validatePositionalArgs(ctx *cli.Context) (string, *big.Int, error) {
+	args := ctx.Args()
+
+	if args.Len() != 2 {
+		return "", nil, errors.New("missing positional args")
+	}
+
+	user := args.Get(0)
+	if len(user) == 0 {
+		return "", nil, errors.New("user cannot be empty")
+	}
+
+	secret := args.Get(1)
+	if len(secret) == 0 {
+		return "", nil, errors.New("secret cannot be empty")
+	}
+
+	secretBigInt := new(big.Int)
+	secretBigInt, ok := secretBigInt.SetString(secret, 10)
+	if !ok {
+		return "", nil, errors.New("secret cannot be converted to bigint")
+	}
+
+	return user, secretBigInt, nil
 }
 
 func main() {
@@ -116,19 +112,38 @@ func main() {
 				ArgsUsage: "user secret",
 				Usage:     "Login with the Nil server",
 				Action:    login,
+				Flags: []cli.Flag{
+					&cli.StringFlag{
+						Name:  "params-file",
+						Value: crypto.DefaultParamsFile,
+						Usage: "Public params to use between client/server",
+					},
+				},
 			},
 			{
 				Name:      "register",
 				ArgsUsage: "user secret",
 				Usage:     "Register with the Nil server",
 				Action:    register,
+				Flags: []cli.Flag{
+					&cli.StringFlag{
+						Name:  "params-file",
+						Value: crypto.DefaultParamsFile,
+						Usage: "Public params to use between client/server",
+					},
+				},
 			},
 		},
 		Flags: []cli.Flag{
 			&cli.StringFlag{
-				Name:  "server-hostname",
-				Value: "nil-server",
+				Name:  "hostname",
+				Value: defaultHostname,
 				Usage: "Hostname for nil-server",
+			},
+			&cli.UintFlag{
+				Name:  "port",
+				Value: defaultPort,
+				Usage: "Port for nil-server",
 			},
 		},
 	}
