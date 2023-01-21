@@ -11,8 +11,14 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 )
 
-func Login(hostname string, port uint, params *crypto.Params, user string, secret *big.Int) (string, error) {
-	r1, r2, k, err := crypto.GenerateR1AndR2(params)
+type Client struct {
+	Hostname string
+	Port     uint
+	Params   *crypto.Params
+}
+
+func (c *Client) Login(user string, secret *big.Int) (string, error) {
+	r1, r2, k, err := crypto.GenerateR1AndR2(c.Params)
 	if err != nil {
 		return "", fmt.Errorf("Failed to generate r1 and r2: %w", err)
 	}
@@ -20,7 +26,7 @@ func Login(hostname string, port uint, params *crypto.Params, user string, secre
 	// Instantiate client.
 	conn, err := grpc.Dial(
 		// Server address.
-		fmt.Sprintf("%s:%d", hostname, port),
+		fmt.Sprintf("%s:%d", c.Hostname, c.Port),
 
 		// Client options.
 		[]grpc.DialOption{
@@ -50,7 +56,7 @@ func Login(hostname string, port uint, params *crypto.Params, user string, secre
 
 	// Generate s for verification.
 	s, err := crypto.GenerateS(
-		params,
+		c.Params,
 		secret,                      // x
 		k,                           // from r1/r2 calc,
 		big.NewInt(challengeResp.C), // challenge computed by server
@@ -71,8 +77,8 @@ func Login(hostname string, port uint, params *crypto.Params, user string, secre
 	return answerResp.SessionId, nil
 }
 
-func Register(hostname string, port uint, params *crypto.Params, user string, secret *big.Int) error {
-	y1, y2, err := crypto.GenerateY1AndY2(params, secret)
+func (c *Client) Register(user string, secret *big.Int) error {
+	y1, y2, err := crypto.GenerateY1AndY2(c.Params, secret)
 	if err != nil {
 		return fmt.Errorf("Failed to generate y1 and y2: %w", err)
 	}
@@ -80,7 +86,7 @@ func Register(hostname string, port uint, params *crypto.Params, user string, se
 	// Instantiate client.
 	conn, err := grpc.Dial(
 		// Server address.
-		fmt.Sprintf("%s:%d", hostname, port),
+		fmt.Sprintf("%s:%d", c.Hostname, c.Port),
 
 		// Client options.
 		[]grpc.DialOption{

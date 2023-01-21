@@ -98,7 +98,7 @@ func (s *AuthServer) VerifyAuthentication(ctx context.Context, req *proto.Authen
 		return nil, errors.New("Active challenge not found")
 	}
 
-	ys, ok := s.storage.users[userID(ch.user)]
+	ys, ok := s.storage.registeredUsers[userID(ch.user)]
 	if !ok {
 		return nil, errors.New("Registered user not found for active challenge")
 	}
@@ -117,12 +117,18 @@ func (s *AuthServer) VerifyAuthentication(ctx context.Context, req *proto.Authen
 		return nil, errors.New("r1 and r2 could not be verified")
 	}
 
-	sessionID, err := crypto.RandomInt(128)
+	id, err := crypto.RandomInt(128)
 	if err != nil {
 		return nil, fmt.Errorf("Failed to generate sessionID: %w", err)
 	}
 
+	idStr := fmt.Sprintf("%x", id)
+
+	if err := s.storage.storeSession(userID(ch.user), sessionID(idStr)); err != nil {
+		return nil, fmt.Errorf("Failed to store session: %w", err)
+	}
+
 	return &proto.AuthenticationAnswerResponse{
-		SessionId: fmt.Sprintf("%x", sessionID),
+		SessionId: idStr,
 	}, nil
 }

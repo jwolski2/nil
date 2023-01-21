@@ -9,6 +9,8 @@ import (
 	"os"
 )
 
+// Load loads a params file from disk and unmarshals it as a crypto.Params
+// pointer.
 func Load(paramsFile string) (*Params, error) {
 	if _, err := os.Stat(paramsFile); err != nil {
 		return nil, fmt.Errorf("Failed to stat params file: %w", err)

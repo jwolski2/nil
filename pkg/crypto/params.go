@@ -6,6 +6,10 @@ const (
 	DefaultParamsFile = "data/params1.json"
 )
 
+// Params represents the public set of parameters known to the client/server in
+// order to successfully perform the authentication protocol. There's a current
+// limitation which uses 1 set of parameters for all registered users as opposed
+// to using 1 set of parameters per user.
 type Params struct {
 	P64 int64 `json:"p"`
 	G64 int64 `json:"g"`

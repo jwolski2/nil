@@ -30,15 +30,15 @@ func login(ctx *cli.Context) error {
 	}
 
 	// Login user.
-	sessionID, err := client.Login(
-		ctx.String("hostname"),
-		ctx.Uint("port"),
-		params,
-		user,
-		secret,
-	)
+	client := &client.Client{
+		Hostname: ctx.String("hostname"),
+		Port:     ctx.Uint("port"),
+		Params:   params,
+	}
+
+	sessionID, err := client.Login(user, secret)
 	if err != nil {
-		return errors.New("Login unsuccessful.")
+		return fmt.Errorf("Login unsuccessful: %s", err.Error())
 	}
 
 	fmt.Println(fmt.Sprintf("Login successful. Session ID is %s.", sessionID))
@@ -60,15 +60,15 @@ func register(ctx *cli.Context) error {
 	}
 
 	// Register user.
-	err = client.Register(
-		ctx.String("hostname"),
-		ctx.Uint("port"),
-		params,
-		user,
-		secret,
-	)
+	client := &client.Client{
+		Hostname: ctx.String("hostname"),
+		Port:     ctx.Uint("port"),
+		Params:   params,
+	}
+
+	err = client.Register(user, secret)
 	if err != nil {
-		return fmt.Errorf("Failed to register user: %w", err)
+		return fmt.Errorf("Registration unsuccessful: %s", err.Error())
 	}
 
 	fmt.Println("User has been registered!")

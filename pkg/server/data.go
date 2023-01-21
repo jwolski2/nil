@@ -6,6 +6,7 @@ import (
 )
 
 type authID string
+type sessionID string
 type userID string
 
 type challenge struct {
