@@ -1,0 +1,34 @@
+# Define builder stage.
+ARG ALPINE_VERSION=3.17
+ARG GO_VERSION=1.19
+FROM golang:${GO_VERSION}-alpine${ALPINE_VERSION} as builder
+
+# Builder stage: Install requisite packages.
+RUN apk update && apk add make
+
+# Builder stage: Set workspace for building the client/server application.
+RUN mkdir -p /workspace
+WORKDIR /workspace
+
+# Builder stage: Copy files to build.
+COPY go.mod .
+COPY Makefile .
+COPY cmd/server/ cmd/server/
+COPY data/ data/
+COPY pkg/crypto/ pkg/crypto/
+COPY pkg/proto/ pkg/proto/
+COPY pkg/server pkg/server/
+COPY vendor/ vendor/
+
+# Builder stage: Build.
+RUN make build-server
+
+# Define release stage.
+ARG ALPINE_VERSION
+
+FROM alpine:${ALPINE_VERSION}
+RUN mkdir -p /usr/share/nil-server/data
+COPY --from=builder /workspace/bin/nil-server /usr/local/bin
+COPY --from=builder /workspace/data/ /usr/share/nil-server/data/
+
+ENTRYPOINT ["nil-server", "start", "--params-file", "/usr/share/nil-server/data/params1.json"]
