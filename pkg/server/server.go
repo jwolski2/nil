@@ -22,7 +22,7 @@ func Start(port uint, params *crypto.Params) error {
 	var opts []grpc.ServerOption
 	grpcServer := grpc.NewServer(opts...)
 
-	proto.RegisterAuthServer(grpcServer, newAuthServer(params))
+	proto.RegisterAuthServer(grpcServer, NewAuthServer(params))
 
 	// Start listening/accepting requests.
 	err = grpcServer.Serve(listener)
@@ -39,7 +39,7 @@ type AuthServer struct {
 	storage *storage
 }
 
-func newAuthServer(params *crypto.Params) *AuthServer {
+func NewAuthServer(params *crypto.Params) *AuthServer {
 	return &AuthServer{
 		params:  params,
 		storage: newStorage(),
