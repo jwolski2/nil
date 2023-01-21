@@ -29,13 +29,21 @@ func login(ctx *cli.Context) error {
 		return fmt.Errorf("Failed to load params from disk: %w", err)
 	}
 
-	// Login user.
-	client := &client.Client{
-		Hostname: ctx.String("hostname"),
-		Port:     ctx.Uint("port"),
-		Params:   params,
+	// Setup client.
+	authServer, err := client.NewRemoteAuthServer(ctx.String("hostname"), ctx.Uint("port"))
+	if err != nil {
+		return fmt.Errorf("Failed to create remote auth server: %w", err)
 	}
 
+	// Close underlying connection to auth server after login.
+	defer authServer.Close()
+
+	client := &client.Client{
+		AuthServer: authServer,
+		Params:     params,
+	}
+
+	// Login user.
 	sessionID, err := client.Login(user, secret)
 	if err != nil {
 		return fmt.Errorf("Login unsuccessful: %s", err.Error())
@@ -59,13 +67,21 @@ func register(ctx *cli.Context) error {
 		return fmt.Errorf("Failed to load params from disk: %w", err)
 	}
 
-	// Register user.
-	client := &client.Client{
-		Hostname: ctx.String("hostname"),
-		Port:     ctx.Uint("port"),
-		Params:   params,
+	// Setup client.
+	authServer, err := client.NewRemoteAuthServer(ctx.String("hostname"), ctx.Uint("port"))
+	if err != nil {
+		return fmt.Errorf("Failed to create remote auth server: %w", err)
 	}
 
+	// Close underlying connection to auth server after register.
+	defer authServer.Close()
+
+	client := &client.Client{
+		AuthServer: authServer,
+		Params:     params,
+	}
+
+	// Register.
 	err = client.Register(user, secret)
 	if err != nil {
 		return fmt.Errorf("Registration unsuccessful: %s", err.Error())

@@ -3,9 +3,9 @@ package client
 import (
 	"testing"
 
-	"github.com/stretchr/testify/assert"
+	"github.com/jwolski2/nil-extended/pkg/server"
 )
 
 func Test1(t *testing.T) {
-	assert.Equal(t, 1, 1, "1 is 1")
+	go server.Start(0, params)
 }
