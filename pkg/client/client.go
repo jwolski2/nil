@@ -15,7 +15,7 @@ type Client struct {
 }
 
 func (c *Client) Login(user string, secret *big.Int) (string, error) {
-	r1, r2, k, err := crypto.GenerateR1AndR2(c.Params)
+	r1, r2, k, err := crypto.ComputeR1AndR2(c.Params)
 	if err != nil {
 		return "", fmt.Errorf("Failed to generate r1 and r2: %w", err)
 	}
@@ -31,7 +31,7 @@ func (c *Client) Login(user string, secret *big.Int) (string, error) {
 	}
 
 	// Generate s for verification.
-	s, err := crypto.GenerateS(
+	s, err := crypto.ComputeS(
 		c.Params,
 		secret,                      // x
 		k,                           // from r1/r2 calc,
@@ -54,7 +54,7 @@ func (c *Client) Login(user string, secret *big.Int) (string, error) {
 }
 
 func (c *Client) Register(user string, secret *big.Int) error {
-	y1, y2, err := crypto.GenerateY1AndY2(c.Params, secret)
+	y1, y2, err := crypto.ComputeY1AndY2(c.Params, secret)
 	if err != nil {
 		return fmt.Errorf("Failed to generate y1 and y2: %w", err)
 	}

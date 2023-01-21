@@ -33,7 +33,7 @@ func GenerateC() (*big.Int, error) {
 	return RandomInt(8)
 }
 
-func GenerateR1AndR2(params *Params) (*big.Int, *big.Int, *big.Int, error) {
+func ComputeR1AndR2(params *Params) (*big.Int, *big.Int, *big.Int, error) {
 	// Generate k.
 	k, err := rand.Prime(rand.Reader, 256)
 	if err != nil {
@@ -49,7 +49,7 @@ func GenerateR1AndR2(params *Params) (*big.Int, *big.Int, *big.Int, error) {
 	return r1, r2, k, nil
 }
 
-func GenerateS(params *Params, x, k, c *big.Int) (*big.Int, error) {
+func ComputeS(params *Params, x, k, c *big.Int) (*big.Int, error) {
 	s := new(big.Int)
 	s.Mul(c, x)
 	s.Sub(k, s)
@@ -58,7 +58,7 @@ func GenerateS(params *Params, x, k, c *big.Int) (*big.Int, error) {
 	return s, nil
 }
 
-func GenerateY1AndY2(params *Params, x *big.Int) (*big.Int, *big.Int, error) {
+func ComputeY1AndY2(params *Params, x *big.Int) (*big.Int, *big.Int, error) {
 	// Compute y1: g^x mod p
 	y1 := new(big.Int).Exp(params.G(), x, params.P())
 
