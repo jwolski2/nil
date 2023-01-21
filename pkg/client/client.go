@@ -11,8 +11,6 @@ import (
 
 type Client struct {
 	AuthServer proto.AuthServer
-	Hostname   string
-	Port       uint
 	Params     *crypto.Params
 }
 

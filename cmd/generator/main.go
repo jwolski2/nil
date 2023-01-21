@@ -43,7 +43,10 @@ func genParams() *crypto.Params {
 		// Find g.
 		for i := int64(2); i < p; i++ {
 			for _, j := range dividesEvenlyAndPrime {
-				if new(big.Int).Exp(big.NewInt(i), big.NewInt(j), big.NewInt(p)).Cmp(big.NewInt(1)) == 0 {
+				// i^j mod p == 1
+				if new(big.Int).Exp(big.NewInt(i), big.NewInt(j), big.NewInt(p)).Cmp(big.NewInt(1)) == 0 &&
+					// i is relatively prime to p.
+					new(big.Int).GCD(nil, nil, big.NewInt(i), big.NewInt(p)).Cmp(big.NewInt(1)) == 0 {
 					g = i
 					q = j
 					goto findh
@@ -54,11 +57,14 @@ func genParams() *crypto.Params {
 	findh:
 		// Find h.
 		for i := int64(2); i < p; i++ {
-			for _, j := range dividesEvenlyAndPrime {
-				if new(big.Int).Exp(big.NewInt(i), big.NewInt(j), big.NewInt(p)).Cmp(big.NewInt(1)) == 0 && i != g {
-					h = i
-					goto exit
-				}
+			// i^q mod p == 1
+			if new(big.Int).Exp(big.NewInt(i), big.NewInt(q), big.NewInt(p)).Cmp(big.NewInt(1)) == 0 &&
+				// h is relatively prime to p.
+				new(big.Int).GCD(nil, nil, big.NewInt(i), big.NewInt(p)).Cmp(big.NewInt(1)) == 0 &&
+				// h is not equal to g.
+				i != g {
+				h = i
+				goto exit
 			}
 		}
 

@@ -117,6 +117,7 @@ func (s *AuthServer) VerifyAuthentication(ctx context.Context, req *proto.Authen
 		return nil, errors.New("r1 and r2 could not be verified")
 	}
 
+	// Generate session ID.
 	id, err := crypto.RandomInt(128)
 	if err != nil {
 		return nil, fmt.Errorf("Failed to generate sessionID: %w", err)
