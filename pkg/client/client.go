@@ -11,8 +11,8 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 )
 
-func Login(serverHostname string, serverPort int, user string, secret *big.Int) (string, error) {
-	r1, r2, k, err := crypto.GenerateR1AndR2()
+func Login(serverHostname string, serverPort int, params *crypto.Params, user string, secret *big.Int) (string, error) {
+	r1, r2, k, err := crypto.GenerateR1AndR2(params)
 	if err != nil {
 		return "", fmt.Errorf("Failed to generate r1 and r2: %w", err)
 	}
@@ -50,6 +50,7 @@ func Login(serverHostname string, serverPort int, user string, secret *big.Int) 
 
 	// Generate s for verification.
 	s, err := crypto.GenerateS(
+		params,
 		secret,                      // x
 		k,                           // from r1/r2 calc,
 		big.NewInt(challengeResp.C), // challenge computed by server
@@ -70,8 +71,8 @@ func Login(serverHostname string, serverPort int, user string, secret *big.Int) 
 	return answerResp.SessionId, nil
 }
 
-func Register(serverHostname string, serverPort int, user string, secret *big.Int) error {
-	y1, y2, err := crypto.GenerateY1AndY2(secret)
+func Register(serverHostname string, serverPort int, params *crypto.Params, user string, secret *big.Int) error {
+	y1, y2, err := crypto.GenerateY1AndY2(params, secret)
 	if err != nil {
 		return fmt.Errorf("Failed to generate y1 and y2: %w", err)
 	}

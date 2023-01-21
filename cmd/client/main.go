@@ -7,6 +7,7 @@ import (
 	"os"
 
 	"github.com/jwolski2/nil-extended/pkg/client"
+	"github.com/jwolski2/nil-extended/pkg/crypto"
 	"github.com/urfave/cli/v2"
 )
 
@@ -44,13 +45,18 @@ func login(ctx *cli.Context) error {
 		serverHostname = defaultServerHostname
 	}
 
-	// Login user.
-	sessionID, err := client.Login(serverHostname, serverPort, user, secretBigInt)
+	params, err := crypto.Load("data/params1.json")
 	if err != nil {
-		return fmt.Errorf("Failed to login: %w", err)
+		return fmt.Errorf("Failed to load params from disk: %w", err)
 	}
 
-	fmt.Println(fmt.Sprintf("Successfully logged in to auth server. Session ID is %s.", sessionID))
+	// Login user.
+	sessionID, err := client.Login(serverHostname, serverPort, params, user, secretBigInt)
+	if err != nil {
+		return errors.New("Login unsuccessful.")
+	}
+
+	fmt.Println(fmt.Sprintf("Login successful. Session ID is %s.", sessionID))
 
 	return nil
 }
@@ -84,13 +90,18 @@ func register(ctx *cli.Context) error {
 		serverHostname = defaultServerHostname
 	}
 
+	params, err := crypto.Load("data/params1.json")
+	if err != nil {
+		return fmt.Errorf("Failed to load params from disk: %w", err)
+	}
+
 	// Register user.
-	err := client.Register(serverHostname, serverPort, user, secretBigInt)
+	err = client.Register(serverHostname, serverPort, params, user, secretBigInt)
 	if err != nil {
 		return fmt.Errorf("Failed to register user: %w", err)
 	}
 
-	fmt.Println("Successfully registered with auth server!")
+	fmt.Println("User has been registered!")
 
 	return nil
 }

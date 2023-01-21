@@ -12,7 +12,7 @@ import (
 	"google.golang.org/grpc"
 )
 
-func Start(port int) error {
+func Start(port uint, params *crypto.Params) error {
 	listener, err := net.Listen("tcp", fmt.Sprintf("0.0.0.0:%d", port))
 	if err != nil {
 		return fmt.Errorf("Failed to create listener on port %d: %w", port, err)
@@ -22,7 +22,7 @@ func Start(port int) error {
 	var opts []grpc.ServerOption
 	grpcServer := grpc.NewServer(opts...)
 
-	proto.RegisterAuthServer(grpcServer, newAuthServer())
+	proto.RegisterAuthServer(grpcServer, newAuthServer(params))
 
 	// Start listening/accepting requests.
 	err = grpcServer.Serve(listener)
@@ -35,11 +35,15 @@ func Start(port int) error {
 
 type AuthServer struct {
 	proto.UnimplementedAuthServer
+	params  *crypto.Params
 	storage *storage
 }
 
-func newAuthServer() *AuthServer {
-	return &AuthServer{storage: newStorage()}
+func newAuthServer(params *crypto.Params) *AuthServer {
+	return &AuthServer{
+		params:  params,
+		storage: newStorage(),
+	}
 }
 
 func (s *AuthServer) CreateAuthenticationChallenge(ctx context.Context, req *proto.AuthenticationChallengeRequest) (*proto.AuthenticationChallengeResponse, error) {
@@ -67,7 +71,6 @@ func (s *AuthServer) CreateAuthenticationChallenge(ctx context.Context, req *pro
 		r2:     req.R2,
 		user:   req.User,
 	}
-	fmt.Printf("challenge is: %+v\n", ch)
 	err = s.storage.storeChallenge(ch)
 	if err != nil {
 		return nil, fmt.Errorf("Failed to record challenge: %w", err)
@@ -101,6 +104,7 @@ func (s *AuthServer) VerifyAuthentication(ctx context.Context, req *proto.Authen
 	}
 
 	isVerified := crypto.VerifyR1AndR2(
+		s.params,
 		big.NewInt(ch.r1),
 		big.NewInt(ch.r2),
 		big.NewInt(req.S),
@@ -113,7 +117,7 @@ func (s *AuthServer) VerifyAuthentication(ctx context.Context, req *proto.Authen
 		return nil, errors.New("R1 and R2 could not be verified")
 	}
 
-	sessionID, err := crypto.RandomInt(256)
+	sessionID, err := crypto.RandomInt(128)
 	if err != nil {
 		return nil, fmt.Errorf("Failed to generate sessionID: %w", err)
 	}
