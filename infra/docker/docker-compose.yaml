@@ -22,7 +22,7 @@ services:
     build:
       context: ../..
       dockerfile: ./infra/docker/Dockerfile.client
-    command: register ${REGISTER_USERNAME:-wolski} ${REGISTER_SECRET:-123}
+    command: register --params-file /usr/share/nil-client/data/params1.json ${REGISTER_USERNAME:-wolski} ${REGISTER_SECRET:-123}
     depends_on:
       # Wait until nil-server is healthy before running registration.
       nil-server:

@@ -9,7 +9,7 @@ cwd=$(dirname "$0")
 die() {
     local message="${1:?message is required by die}"
 
-    echo "error: $msg" >&2
+    echo "error: $message" >&2
     exit 1
 }
 

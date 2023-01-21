@@ -14,6 +14,7 @@ WORKDIR /workspace
 COPY go.mod .
 COPY Makefile .
 COPY cmd/client/ cmd/client/
+COPY data/ data/
 COPY pkg/client/ pkg/client/
 COPY pkg/crypto/ pkg/crypto/
 COPY pkg/proto/ pkg/proto/
@@ -26,6 +27,8 @@ RUN make build-client
 ARG ALPINE_VERSION
 
 FROM alpine:${ALPINE_VERSION}
+RUN mkdir -p /usr/share/nil-client/data
 COPY --from=builder /workspace/bin/nil-client /usr/local/bin
+COPY --from=builder /workspace/data/ /usr/share/nil-client/data/
 
 ENTRYPOINT ["nil-client"]
