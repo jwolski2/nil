@@ -7,7 +7,7 @@ services:
     build:
       context: ../..
       dockerfile: ./infra/docker/Dockerfile.server
-    # Healthcheck ensure server is reachable.
+    # Healthcheck ensures server is reachable.
     healthcheck:
       interval: 10s
       retries: 3
@@ -22,11 +22,15 @@ services:
     build:
       context: ../..
       dockerfile: ./infra/docker/Dockerfile.client
-    command: register --params-file /usr/share/nil-client/data/params1.json ${REGISTER_USERNAME:-wolski} ${REGISTER_SECRET:-123}
+    command:
+      - |
+        nil-client register --params-file /usr/share/nil-client/data/params1.json ${USER:-wolski} ${REG_SECRET:-123} && \
+          nil-client login --params-file /usr/share/nil-client/data/params1.json ${USER:-wolski} ${LOGIN_SECRET:-123}
     depends_on:
       # Wait until nil-server is healthy before running registration.
       nil-server:
         condition: service_healthy
+    entrypoint: ["/bin/sh", "-c"]
     image: nil-client:latest
     networks:
       - nil-extended

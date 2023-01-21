@@ -30,4 +30,4 @@ test:
 
 .PHONY: test-e2e
 test-e2e:
-	./scripts/test-e2e-registration
+	./scripts/test-e2e

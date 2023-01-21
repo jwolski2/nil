@@ -21,7 +21,7 @@ docker_compose_down() {
     sudo docker-compose -f $cwd/../infra/docker/docker-compose.yaml down >/dev/null 2>&1
 }
 
-test_registration_succeeds() {
+test_succeeds() {
     # Setup.
     docker_compose_up || die "docker-compose up failed"
 
@@ -35,9 +35,11 @@ test_registration_succeeds() {
     return $exit_code
 }
 
-test_registration_fails() {
+# test_fails ensures the e2e test fails when the login secret is different from the
+# registration secret.
+test_fails() {
     # Setup.
-    REGISTER_SECRET=abc docker_compose_up || die "docker-compose up failed"
+    REG_SECRET=123 LOGIN_SECRET=1234 docker_compose_up || die "docker-compose up failed"
 
     # Wait for client container to exit.
     local exit_code
@@ -87,7 +89,7 @@ EOF
     local num_passed=0
 
     # Run tests.
-    for t in test_registration_succeeds test_registration_fails; do
+    for t in test_succeeds test_fails; do
         if eval $t; then
             echo "✅ $t passed"
             num_passed=$(( num_passed + 1 ))
