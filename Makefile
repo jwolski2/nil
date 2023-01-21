@@ -24,6 +24,10 @@ run-terraform:
 	terraform -chdir=infra/terraform plan -out=plan.json
 	terraform -chdir=infra/terraform apply ./plan.json
 
+.PHONY: test
+test:
+	@go test -v ./...
+
 .PHONY: test-e2e
 test-e2e:
 	./scripts/test-e2e-registration
