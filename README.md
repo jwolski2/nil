@@ -171,10 +171,53 @@ Please wait. This may take several seconds...
 
 ## :bust_in_silhouette: User's Guide
 
-As a user, you may want to run the client and server applications. You have 2
-choices: run the Go binaries on-host or in Docker.
+As a user, you may want to run the client and server applications. First,
+familarize yourself with their usage. Then, choose between running
+[on-host](#running-on-host) or [in a container](#running-in-docker).
 
-If running the binaries on-host, start the server first:
+__Server usage__
+
+```
+./bin/nil-server --help
+NAME:
+   nil-server - A Nil server
+
+USAGE:
+   nil-server [global options] command [command options] [arguments...]
+
+COMMANDS:
+   start    Start the server
+   help, h  Shows a list of commands or help for one command
+
+GLOBAL OPTIONS:
+   --help, -h  show help (default: false)
+```
+
+__Client usage__
+
+```
+./bin/nil-client --help
+NAME:
+   nil-client - A CLI for the Nil server
+
+USAGE:
+   nil-client [global options] command [command options] [arguments...]
+
+COMMANDS:
+   login     Login with the Nil server
+   register  Register with the Nil server
+   help, h   Shows a list of commands or help for one command
+
+GLOBAL OPTIONS:
+   --hostname value  Hostname for nil-server (default: "nil-server")
+   --port value      Port for nil-server (default: 9999)
+   --help, -h        show help (default: false)
+```
+Then, choose between running on-host or in Docker.
+
+### Running on-host
+
+If running the applications on-host, start the server first:
 
 ```
 ./bin/nil-server start
@@ -194,6 +237,8 @@ Then, complete the authentication process by logging in:
 ./bin/nil-client --hostname localhost login wolski 8675309
 Login successful. Session ID is 1aacf8d5312b827f82f7d69f806fc1f4.
 ```
+
+### Running in Docker
 
 To run the same in Docker, run the Make target:
 
@@ -215,7 +260,7 @@ nil-client_1  | Login successful. Session ID is d896619fd6b35e7dd07a6155cd3b3d2.
 docker_nil-client_1 exited with code 0
 ```
 
-**Error Cases**
+### Error Scenarios
 
 Once you get the client and server running, you should know a bit about the
 rules of the protocol:
