@@ -12,6 +12,8 @@ import (
 	"google.golang.org/grpc"
 )
 
+// Start starts the gRPC server and awaits connections. This is a blocking
+// function.
 func Start(port uint, params *crypto.Params) error {
 	listener, err := net.Listen("tcp", fmt.Sprintf("0.0.0.0:%d", port))
 	if err != nil {
@@ -46,6 +48,13 @@ func NewAuthServer(params *crypto.Params) *AuthServer {
 	}
 }
 
+// CreateAuthenticationChallenge creates and storages a challenge for the user.
+//
+// It errors out if:
+//   * The user is not registered
+//   * A c-value cannot be generated
+//   * An auth ID cannot be generated
+//   * The active challenge cannot be stored in-memory
 func (s *AuthServer) CreateAuthenticationChallenge(ctx context.Context, req *proto.AuthenticationChallengeRequest) (*proto.AuthenticationChallengeResponse, error) {
 	if !s.storage.hasUser(req.User) {
 		return nil, errors.New("user does not exist")
@@ -82,6 +91,10 @@ func (s *AuthServer) CreateAuthenticationChallenge(ctx context.Context, req *pro
 	}, nil
 }
 
+// Register registers the users y1 and y2 values.
+//
+// It errors out if:
+//   * The user cannot be stored
 func (s *AuthServer) Register(ctx context.Context, req *proto.RegisterRequest) (*proto.RegisterResponse, error) {
 	// Attempt to store user in in-memory storage.
 	err := s.storage.store(req.User, &ys{req.Y1, req.Y2})
@@ -92,6 +105,16 @@ func (s *AuthServer) Register(ctx context.Context, req *proto.RegisterRequest) (
 	return &proto.RegisterResponse{}, nil
 }
 
+// VerifyAuthentication verifies the execution of the protocol by looking up an
+// active challenge, the user's registered y1 and y2 values and determining if
+// r1 and r2 are correct.
+//
+// It errors out if:
+//   * There is no active challenge given an auth ID
+//   * There is no registered user for the active challenge
+//   * r1 and r2 cannot be verified
+//   * A session ID cannot be generated
+//   * Or if the session cannot be stored
 func (s *AuthServer) VerifyAuthentication(ctx context.Context, req *proto.AuthenticationAnswerRequest) (*proto.AuthenticationAnswerResponse, error) {
 	ch, ok := s.storage.activeChallenges[authID(req.AuthId)]
 	if !ok {
@@ -114,7 +137,7 @@ func (s *AuthServer) VerifyAuthentication(ctx context.Context, req *proto.Authen
 	)
 
 	if !isVerified {
-		return nil, errors.New("r1 and r2 could not be verified")
+		return nil, errors.New("Password is incorrect")
 	}
 
 	// Generate session ID.
