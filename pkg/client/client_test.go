@@ -9,9 +9,14 @@ import (
 
 	"github.com/jwolski2/nil-extended/pkg/crypto"
 	"github.com/jwolski2/nil-extended/pkg/server"
+	"github.com/rs/zerolog"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
+
+func init() {
+	zerolog.SetGlobalLevel(zerolog.Disabled)
+}
 
 func TestRegister(t *testing.T) {
 	// Setup.

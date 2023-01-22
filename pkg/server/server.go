@@ -9,7 +9,13 @@ import (
 
 	"github.com/jwolski2/nil-extended/pkg/crypto"
 	"github.com/jwolski2/nil-extended/pkg/proto"
+	"github.com/rs/zerolog/log"
 	"google.golang.org/grpc"
+)
+
+const (
+	idBitLen         = 128
+	unsafeLogWarning = "UNSAFE LOGGING: For demonstration purposes only"
 )
 
 // Start starts the gRPC server and awaits connections. This is a blocking
@@ -27,6 +33,8 @@ func Start(port uint, params *crypto.Params) error {
 	proto.RegisterAuthServer(grpcServer, NewAuthServer(params))
 
 	// Start listening/accepting requests.
+	log.Info().Msgf("Server is listening on :%d", port)
+
 	err = grpcServer.Serve(listener)
 	if err != nil {
 		return fmt.Errorf("Failed to start serving requests: %w", err)
@@ -65,7 +73,7 @@ func (s *AuthServer) CreateAuthenticationChallenge(ctx context.Context, req *pro
 		return nil, fmt.Errorf("Failed to generate c: %w", err)
 	}
 
-	authID, err := crypto.RandomInt(256)
+	authID, err := crypto.RandomInt(idBitLen)
 	if err != nil {
 		return nil, fmt.Errorf("Failed to generate auth ID: %w", err)
 	}
@@ -85,6 +93,12 @@ func (s *AuthServer) CreateAuthenticationChallenge(ctx context.Context, req *pro
 		return nil, fmt.Errorf("Failed to record challenge: %w", err)
 	}
 
+	log.Info().
+		Str("authID", fmt.Sprintf("%x", authID)).
+		Str("user", req.User).
+		Str("warning", unsafeLogWarning).
+		Msg("New challenge stored")
+
 	return &proto.AuthenticationChallengeResponse{
 		AuthId: ch.authIDStr(),
 		C:      ch.c.Int64(),
@@ -102,6 +116,11 @@ func (s *AuthServer) Register(ctx context.Context, req *proto.RegisterRequest) (
 		return nil, fmt.Errorf("Failed to register: %w", err)
 	}
 
+	log.Info().
+		Str("user", req.User).
+		Str("warning", unsafeLogWarning).
+		Msg("New user stored")
+
 	return &proto.RegisterResponse{}, nil
 }
 
@@ -118,11 +137,13 @@ func (s *AuthServer) Register(ctx context.Context, req *proto.RegisterRequest) (
 func (s *AuthServer) VerifyAuthentication(ctx context.Context, req *proto.AuthenticationAnswerRequest) (*proto.AuthenticationAnswerResponse, error) {
 	ch, ok := s.storage.activeChallenges[authID(req.AuthId)]
 	if !ok {
+		log.Warn().Msg("Login was attempted on inactive challenge")
 		return nil, errors.New("Active challenge not found")
 	}
 
 	ys, ok := s.storage.registeredUsers[userID(ch.user)]
 	if !ok {
+		log.Warn().Msg("Login was attempted from unregistered user")
 		return nil, errors.New("Registered user not found for active challenge")
 	}
 
@@ -141,7 +162,7 @@ func (s *AuthServer) VerifyAuthentication(ctx context.Context, req *proto.Authen
 	}
 
 	// Generate session ID.
-	id, err := crypto.RandomInt(128)
+	id, err := crypto.RandomInt(idBitLen)
 	if err != nil {
 		return nil, fmt.Errorf("Failed to generate sessionID: %w", err)
 	}
@@ -151,6 +172,13 @@ func (s *AuthServer) VerifyAuthentication(ctx context.Context, req *proto.Authen
 	if err := s.storage.storeSession(userID(ch.user), sessionID(idStr)); err != nil {
 		return nil, fmt.Errorf("Failed to store session: %w", err)
 	}
+
+	log.Info().
+		Str("authID", req.AuthId).
+		Str("sessionID", idStr).
+		Str("user", ch.user).
+		Str("warning", unsafeLogWarning).
+		Msg("New session stored")
 
 	return &proto.AuthenticationAnswerResponse{
 		SessionId: idStr,

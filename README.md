@@ -20,6 +20,7 @@ In this repo, you'll find:
 * Code for a ZKP client, server and value generator
 * Dockerfiles for the client (CLI) and server
 * A docker-compose file which launches the server and runs client commands
+* Unit tests for the crypto package
 * Functional tests for the register/login flow
 * An end-to-end test of the client and server using Docker Compose
 * Pre-computed values for p, g, h and q under [data](./data)
@@ -49,7 +50,11 @@ reachable, starts the client and executes the register/login flow.
 
 **:test_tube: About the tests**
 
-There are two types of tests: functional and end-to-end.
+There are 3 types of tests: unit, functional and end-to-end.
+
+The [unit tests](./pkg/crypto/crypto_test.go) are written in Go and test that r1
+and r2 values can be verified outside the context of the client/server
+application.
 
 The [functional tests](./pkg/client/client_test.go) are written in Go and test
 the client/server interaction at the functional-level by ensuring the
@@ -81,9 +86,9 @@ implementation down into multiple stages:
 1. Set development environment: basic Go code, Makefile, Docker.
 2. Implement the protocol: gRPC, crypto.
 3. Write tests.
-4. Terraform and documentation.
+4. Documentation.
 
-I'm fairly proficient in all parts but the crypto part. I used many resources to
+I'm fairly proficient in all parts but the crypto part. I used several resources to
 accomplish what's there, and even still, I can't confidently stand behind or
 reason deeply about the math. Though, I had fun putting everything together.
 Thanks for your review and consideration.
