@@ -141,11 +141,11 @@ nil-client  nil-generator  nil-server
 
 ### Running Tests
 
-There are two types of tests that have been implemented: functional and
+There are 3 types of tests that have been implemented: unit, functional and
 end-to-end.
 
-The functional tests test the registration and login logic between client and
-server. To run them, run the Make target:
+The unit and functional tests test the crypto and the registration and login
+logic between client and server. To run them, run the Make target:
 
 ```
 make test
