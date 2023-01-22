@@ -4,8 +4,8 @@ A Go implementation of an extended ZKP protocol which adds 1-factor authenticati
 
 ## :hatching_chick: Getting Started
 
-Hello, and welcome to repository! To get started, refer to the guide that best
-suits your use case:
+Hello, and welcome to the repository! To get started, refer to the guide that
+best suits your use case:
 
 * [Reviewer's Guide](#student-reviewers-guide) - for those that want to learn about the repo, implementation and thought process
 * [Developer's Guide](#construction_worker-developers-guide) - for those that want to build, run and test the implementation
