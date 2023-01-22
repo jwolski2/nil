@@ -81,7 +81,7 @@ implementation down into multiple stages:
 1. Set development environment: basic Go code, Makefile, Docker.
 2. Implement the protocol: gRPC, crypto.
 3. Write tests.
-4. Terraform and documentation.
+4. Documentation.
 
 I'm fairly proficient in all parts but the crypto part. I used many resources to
 accomplish what's there, and even still, I can't confidently stand behind or

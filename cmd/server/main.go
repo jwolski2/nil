@@ -28,7 +28,7 @@ func start(ctx *cli.Context) error {
 	}
 
 	if err := server.Start(port, params); err != nil {
-		return fmt.Errorf("Failed to start server: %w", err)
+		return fmt.Errorf("Server failed: %w", err)
 	}
 
 	return nil
