@@ -4,8 +4,18 @@ A Go implementation of an extended ZKP protocol which adds 1-factor authenticati
 
 ## :hatching_chick: Getting Started
 
-Hello, and welcome to the repository! To get started, refer to the guide that
-best suits your use case:
+Hello, and welcome to the repository! This exercise was completed over the
+course of 3 or 4 days. I broke implementation down into multiple stages:
+
+1. Set development environment: basic Go code, Makefile, Docker.
+2. Implement the protocol: gRPC, crypto.
+3. Write tests.
+4. Documentation.
+
+Please read through the README since all parts are described in a fair amount of
+detail. Thanks for your review and consideration!
+
+To get started, refer to the guide that best suits your use case:
 
 * [Reviewer's Guide](#student-reviewers-guide) - for those that want to learn about the repo, implementation and thought process
 * [Developer's Guide](#construction_worker-developers-guide) - for those that want to build, run and test the implementation
@@ -35,6 +45,15 @@ server and value generator.
 The **pkg** dir contains the authentication protocol implementation and consists
 of [client](./pkg/client), [server](./pkg/server), [crypto](./pkg/crypto) and
 [proto](./pkg/proto) packages.
+
+_Notable areas for improvement_
+
+There are some areas of the code, which I know can use improvement. Here they
+are:
+
+* Use of BigInt and int64 are used a bit loosely; more can be done to prevent overflow / improve correctness.
+* The error messages spat out by the gRPC server and presented on the CLI are verbose
+* Bit lengths used for random numbers and auth/session IDs are fairly arbitrary
 
 **:whale: About the Docker setup**
 
@@ -77,21 +96,6 @@ time and have them loaded by the client/server at startup.
 
 These data files double as test fixtures for the functional tests mentioned
 above.
-
-**:dart: About the implementation**
-
-This exercise was completed over the course of 3 or 4 days. I broke
-implementation down into multiple stages:
-
-1. Set development environment: basic Go code, Makefile, Docker.
-2. Implement the protocol: gRPC, crypto.
-3. Write tests.
-4. Documentation.
-
-I'm fairly proficient in all parts but the crypto part. I used several resources to
-accomplish what's there, and even still, I can't confidently stand behind or
-reason deeply about the math. Though, I had fun putting everything together.
-Thanks for your review and consideration.
 
 ## :construction_worker: Developer's Guide
 
@@ -171,10 +175,53 @@ Please wait. This may take several seconds...
 
 ## :bust_in_silhouette: User's Guide
 
-As a user, you may want to run the client and server applications. You have 2
-choices: run the Go binaries on-host or in Docker.
+As a user, you may want to run the client and server applications. First,
+familarize yourself with their usage. Then, choose between running
+[on-host](#running-on-host) or [in a container](#running-in-docker).
 
-If running the binaries on-host, start the server first:
+__Server usage__
+
+```
+./bin/nil-server --help
+NAME:
+   nil-server - A Nil server
+
+USAGE:
+   nil-server [global options] command [command options] [arguments...]
+
+COMMANDS:
+   start    Start the server
+   help, h  Shows a list of commands or help for one command
+
+GLOBAL OPTIONS:
+   --help, -h  show help (default: false)
+```
+
+__Client usage__
+
+```
+./bin/nil-client --help
+NAME:
+   nil-client - A CLI for the Nil server
+
+USAGE:
+   nil-client [global options] command [command options] [arguments...]
+
+COMMANDS:
+   login     Login with the Nil server
+   register  Register with the Nil server
+   help, h   Shows a list of commands or help for one command
+
+GLOBAL OPTIONS:
+   --hostname value  Hostname for nil-server (default: "nil-server")
+   --port value      Port for nil-server (default: 9999)
+   --help, -h        show help (default: false)
+```
+Then, choose between running on-host or in Docker.
+
+### Running on-host
+
+If running the applications on-host, start the server first:
 
 ```
 ./bin/nil-server start
@@ -194,6 +241,8 @@ Then, complete the authentication process by logging in:
 ./bin/nil-client --hostname localhost login wolski 8675309
 Login successful. Session ID is 1aacf8d5312b827f82f7d69f806fc1f4.
 ```
+
+### Running in Docker
 
 To run the same in Docker, run the Make target:
 
@@ -215,7 +264,7 @@ nil-client_1  | Login successful. Session ID is d896619fd6b35e7dd07a6155cd3b3d2.
 docker_nil-client_1 exited with code 0
 ```
 
-**Error Cases**
+### Error Scenarios
 
 Once you get the client and server running, you should know a bit about the
 rules of the protocol:

@@ -31,7 +31,7 @@ func testVerificationWithParamsFile(t *testing.T, paramsFile string) {
 
 	// Assert.
 	verified := VerifyR1AndR2(params, r1, r2, s, c, y1, y2)
-	assert.True(t, verified, "No error after registering")
+	assert.True(t, verified, "r1 and r2 are verified")
 }
 
 func TestVerificationAgainstAllFixtures(t *testing.T) {
@@ -65,5 +65,5 @@ func TestWrongS(t *testing.T) {
 
 	// Assert.
 	verified := VerifyR1AndR2(params, r1, r2, s, c, y1, y2)
-	assert.False(t, verified, "No error after registering")
+	assert.False(t, verified, "r1 and r2 are not verified")
 }
