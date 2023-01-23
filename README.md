@@ -12,10 +12,8 @@ course of 3 or 4 days. I broke implementation down into multiple stages:
 3. Write tests.
 4. Documentation.
 
-I'm fairly proficient in all parts but the crypto part. I used several resources
-to accomplish what's there, and even still, I can't confidently stand behind or
-reason deeply about the math. Though, I had fun putting everything together.
-Thanks for your review and consideration.
+Please read through the README since all parts are described in a fair amount of
+detail. Thanks for your review and consideration!
 
 To get started, refer to the guide that best suits your use case:
 
@@ -47,6 +45,15 @@ server and value generator.
 The **pkg** dir contains the authentication protocol implementation and consists
 of [client](./pkg/client), [server](./pkg/server), [crypto](./pkg/crypto) and
 [proto](./pkg/proto) packages.
+
+_Notable areas for improvement_
+
+There are some areas of the code, which I know can use improvement. Here they
+are:
+
+* Use of BigInt and int64 are used a bit loosely; more can be done to prevent overflow / improve correctness.
+* The error messages spat out by the gRPC server and presented on the CLI are verbose
+* Bit lengths used for random numbers and auth/session IDs are fairly arbitrary
 
 **:whale: About the Docker setup**
 
