@@ -4,8 +4,20 @@ A Go implementation of an extended ZKP protocol which adds 1-factor authenticati
 
 ## :hatching_chick: Getting Started
 
-Hello, and welcome to the repository! To get started, refer to the guide that
-best suits your use case:
+Hello, and welcome to the repository! This exercise was completed over the
+course of 3 or 4 days. I broke implementation down into multiple stages:
+
+1. Set development environment: basic Go code, Makefile, Docker.
+2. Implement the protocol: gRPC, crypto.
+3. Write tests.
+4. Documentation.
+
+I'm fairly proficient in all parts but the crypto part. I used several resources
+to accomplish what's there, and even still, I can't confidently stand behind or
+reason deeply about the math. Though, I had fun putting everything together.
+Thanks for your review and consideration.
+
+To get started, refer to the guide that best suits your use case:
 
 * [Reviewer's Guide](#student-reviewers-guide) - for those that want to learn about the repo, implementation and thought process
 * [Developer's Guide](#construction_worker-developers-guide) - for those that want to build, run and test the implementation
@@ -77,21 +89,6 @@ time and have them loaded by the client/server at startup.
 
 These data files double as test fixtures for the functional tests mentioned
 above.
-
-**:dart: About the implementation**
-
-This exercise was completed over the course of 3 or 4 days. I broke
-implementation down into multiple stages:
-
-1. Set development environment: basic Go code, Makefile, Docker.
-2. Implement the protocol: gRPC, crypto.
-3. Write tests.
-4. Documentation.
-
-I'm fairly proficient in all parts but the crypto part. I used several resources to
-accomplish what's there, and even still, I can't confidently stand behind or
-reason deeply about the math. Though, I had fun putting everything together.
-Thanks for your review and consideration.
 
 ## :construction_worker: Developer's Guide
 
