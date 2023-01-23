@@ -16,7 +16,7 @@ build-server:
 
 .PHONY: run-docker
 run-docker:
-	sudo docker-compose -f infra/docker/docker-compose.yaml up --build
+	docker-compose -f infra/docker/docker-compose.yaml up --build
 
 .PHONY: run-terraform
 run-terraform:
